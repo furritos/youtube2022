@@ -3,6 +3,7 @@ import { faBed, faCar, faPerson, faPlane, faTaxi } from '@fortawesome/free-solid
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { format } from 'date-fns';
 import React from 'react';
+import { useNavigate } from "react-router-dom";
 import { DateRange } from 'react-date-range';
 import 'react-date-range/dist/styles.css'; // main css file
 import 'react-date-range/dist/theme/default.css'; // theme css file
@@ -10,6 +11,8 @@ import "./header.scss";
 
 
 const Header = ({type}) => {
+
+  const [destination, setDestination] = React.useState("")
 
   const [openDate, setOpenDate] = React.useState(false)
 
@@ -35,6 +38,12 @@ const Header = ({type}) => {
         ...prev, [name]: operation === "i" ? options[name] + 1 : options[name] - 1
       }
     })
+  }
+
+  const navigate = useNavigate();
+
+  const handleSearch = () => {
+    navigate("/hotels", {state: {destination, date, options}})
   }
 
   return (
@@ -68,13 +77,14 @@ const Header = ({type}) => {
         <div className="headerSearch">
           <div className="headerSearchItem">
             <FontAwesomeIcon icon={faBed} className="headerIcon" />
-            <input type="text" className="headerSearchInput" placeholder='Where are you going?' />
+            <input type="text" className="headerSearchInput" placeholder='Where are you going?' onChange={e=>setDestination(e.target.value)} />
           </div>
           <div className="headerSearchItem">
             <FontAwesomeIcon icon={faCalendarDays} className="headerIcon" />
             <span onClick={() => setOpenDate(!openDate)} className='headerSearchText'>{`${format(date[0].startDate, "MM/dd/yyyy")}`} to {`${format(date[0].endDate, "MM/dd/yyyy")}`}</span>
             {openDate && <DateRange
               editableDateInputs={true}
+              minDate={new Date()}
               onChange={item => setDate([item.selection])}
               moveRangeOnFirstSelection={false}
               ranges={date}
@@ -112,7 +122,7 @@ const Header = ({type}) => {
             </div>}
           </div>
           <div className="headerSearchItem">
-            <button className="headerBtn">Search</button>
+            <button onClick={handleSearch} className="headerBtn">Search</button>
           </div>
         </div></>}
       </div>
